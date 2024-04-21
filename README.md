@@ -17,7 +17,7 @@ Users interact with the Unix web application through chat. They can ask the bot 
 - Database: SQL
 
 ## Contact
-For any inquiries, please contact [your email here].
+For any inquiries, please contact me.
 
 ## Note
 This project was completed as part of the Makeathon AI programming competition in Athens.
