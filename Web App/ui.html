@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EnterSoft Chat-Bot</title>
+  <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+  <section class="msger">
+    <header class="msger-header">
+      <div class="msger-header-title">
+        <i class="fas fa-comment-alt"></i> EnterSoft Chat-Bot
+      </div>
+      <div class="msger-header-options">
+        <span><i class="fas fa-cog"></i></span>
+      </div>
+    </header>
+  
+    <main class="msger-chat">
+      <!-- Chat messages will be appended here -->
+    </main>
+  
+    <form class="msger-inputarea">
+      <input type="text" class="msger-input" placeholder="Enter your message...">
+      <button type="submit" class="msger-send-btn">Send</button>
+    </form>
+  </section>
+
+  <script>
+    const msgerChat = document.querySelector(".msger-chat");
+    const msgerForm = document.querySelector(".msger-inputarea");
+    const msgerInput = document.querySelector(".msger-input");
+
+    msgerForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const msgText = msgerInput.value;
+      if (!msgText) return;
+
+      appendMessage("You", "https://panosgio.org/hackathon/circle.jpg", "right", msgText);
+      msgerInput.value = "";
+
+      // Στέλνουμε το ερώτημα στον server
+      fetch("/run_query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          question: msgText
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const answer = data.answer;
+        appendMessage("Bot", "https://panosgio.org/hackathon/bot.png", "left", answer);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+    });
+
+    function appendMessage(name, img, side, text) {
+      // Κατασκευή του HTML για το μήνυμα
+      const msgHTML = `
+        <div class="msg ${side}-msg">
+          <div class="msg-img" style="background-image: url(${img})"></div>
+          <div class="msg-bubble">
+            <div class="msg-info">
+              <div class="msg-info-name">${name}</div>
+              <div class="msg-info-time">${formatDate(new Date())}</div>
+            </div>
+            <div class="msg-text">${text}</div>
+          </div>
+        </div>
+      `;
+
+      // Προσθήκη του μηνύματος στη συνομιλία
+      msgerChat.insertAdjacentHTML("beforeend", msgHTML);
+      msgerChat.scrollTop += 500;
+    }
+
+    function formatDate(date) {
+      const h = "0" + date.getHours();
+      const m = "0" + date.getMinutes();
+      return `${h.slice(-2)}:${m.slice(-2)}`;
+    }
+  </script>
+
+  
+</body>
+</html>
